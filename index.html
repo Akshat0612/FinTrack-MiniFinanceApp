@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>FinTrack — Mini Finance App</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/styles.css">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- React UMD (minimal, no build) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+</head>
+
+<body>
+    <header class="topbar">
+        <h1>FinTrack</h1>
+        <div class="top-controls">
+            <!-- React will render the theme toggle here -->
+            <div id="reactThemeRoot"></div>
+        </div>
+    </header>
+
+    <main class="container">
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="tx">Transactions</button>
+            <button class="tab-btn" data-tab="inv">Investments</button>
+            <button class="tab-btn" data-tab="liab">Liabilities</button>
+        </nav>
+
+        <!-- TRANSACTIONS TAB -->
+        <section id="tab-tx" class="tab active">
+
+            <!-- Form + KPIs -->
+            <div class="grid-two">
+                <div class="card form-card">
+                    <h2>Add Transaction</h2>
+                    <form id="txForm">
+                        <div class="row">
+                            <input id="txAmount" type="number" step="1" min="0" placeholder="Amount" required />
+                            <select id="txType">
+                                <option value="expense">Expense</option>
+                                <option value="income">Income</option>
+                            </select>
+
+                            <input list="txCategoryList" id="txCategory" placeholder="Category" />
+                            <datalist id="txCategoryList"></datalist>
+
+                            <input id="txDate" type="date" />
+                        </div>
+                        <input id="txNote" type="text" placeholder="Note (optional)" />
+                        <div class="actions">
+                            <button type="submit">Add</button>
+                            <button type="reset">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card kpis">
+                    <div class="kpi">Balance: <span id="kpiBalance">₹0.00</span></div>
+                    <div class="kpi">Income: <span id="kpiIncome">₹0.00</span></div>
+                    <div class="kpi">Expense: <span id="kpiExpense">₹0.00</span></div>
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <div class="card table-card">
+                <div class="table-controls">
+                    <input id="searchBox" type="search" placeholder="Search note or category..." />
+
+                    <select id="sortBy">
+                        <option value="date_desc">Date ↓</option>
+                        <option value="date_asc">Date ↑</option>
+                        <option value="amount_desc">Amount ↓</option>
+                        <option value="amount_asc">Amount ↑</option>
+                    </select>
+
+                    <select id="dateRangeMode" title="Filter mode">
+                        <option value="month">Month</option>
+                        <option value="year">Year</option>
+                        <option value="all">All time</option>
+                    </select>
+
+                    <input id="monthPicker" type="month" title="Filter by month">
+
+                    <input id="yearPicker" type="number" min="2000" max="2100" step="1" placeholder="Year"
+                        style="width:92px; display:none;">
+
+                    <button type="button" id="btnExportSummary">Export Summary</button>
+                </div>
+
+                <table id="txTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Note</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div id="reactChartsRoot" class="card react-charts-root"></div>
+
+        </section>
+
+        <!-- INVESTMENTS TAB -->
+        <section id="tab-inv" class="tab">
+            <div class="card">
+                <h2>Investments (Basic)</h2>
+
+                <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+                    <label for="csvImportInput" class="btn"
+                        style="cursor:pointer; padding:6px 10px; border-radius:8px; border:1px solid #e6eefc; background:var(--card);">
+                        Import Portfolio (CSV)
+                    </label>
+                    <input id="csvImportInput" type="file" accept=".csv,text/csv" style="display:none" />
+                    <span id="csvImportStatus" style="font-size:13px; color:#556; margin-left:6px;"></span>
+                </div>
+
+                <form id="invForm" class="inv-form">
+                    <div class="row">
+                        <input id="invScheme" placeholder="Scheme name (e.g., Axis Bluechip)" required>
+                        <select id="invCategory">
+                            <option>Equity</option>
+                            <option>Debt</option>
+                            <option>Hybrid</option>
+                            <option>Index</option>
+                        </select>
+                        <input id="invAmount" type="number" step="0.01" placeholder="Amount (₹)" required>
+                        <input id="invNav" type="number" step="0.0001" placeholder="NAV (₹)" required>
+                        <input id="invDate" type="date">
+                    </div>
+                    <div class="actions">
+                        <button type="submit">Add Buy</button>
+                        <button id="invReset" type="button">Reset</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Holdings</h3>
+                <table id="holdingsTable">
+                    <thead>
+                        <tr>
+                            <th>Scheme</th>
+                            <th>Category</th>
+                            <th>Units</th>
+                            <th>Avg Cost</th>
+                            <th>Curr NAV</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>Allocation (by category)</h3>
+                <div class="inv-pie-wrapper">
+                    <canvas id="invPie"></canvas>
+                </div>
+            </div>
+
+            <div class="card sip-card">
+                <h3>SIP Projection (based on current portfolio)</h3>
+
+                <form id="sipForm" class="inv-form sip-form">
+                    <div class="row">
+                        <!-- NEW: monthly SIP amount input -->
+                        <input id="sipAmount" type="number" min="0" step="100" placeholder="Monthly SIP amount (₹)"
+                            required />
+                        <input id="sipEndMonth" type="month" required />
+                    </div>
+
+                    <p class="sip-note">
+                        Uses your current mutual fund allocation. Assumed annual returns:
+                        <strong>Equity 12%</strong>, <strong>Debt 7%</strong>,
+                        <strong>Hybrid 10%</strong>, <strong>Index 11%</strong>
+                        (others 9%).
+                    </p>
+
+                    <div class="actions">
+                        <button type="submit">Calculate</button>
+                        <button type="button" id="sipReset">Reset</button>
+                    </div>
+                </form>
+
+                <div id="sipResult" class="sip-result"></div>
+            </div>
+        </section>
+
+        <!-- LIABILITIES TAB -->
+        <section id="tab-liab" class="tab">
+            <div class="grid-two">
+                <!-- Add Liability -->
+                <div class="card form-card">
+                    <h2>Add Liability</h2>
+                    <form id="liabForm">
+                        <div class="row">
+                            <input id="liabName" type="text" placeholder="Liability name"
+                                required />
+                        </div>
+                        <div class="row">
+                            <input id="liabAmount" type="number" step="1" min="0" placeholder="Amount (₹)" required />
+                            <input id="liabDueDate" type="date" required />
+                            <select id="liabPriority">
+                                <option value="Low">Priority: Low</option>
+                                <option value="Medium">Priority: Medium</option>
+                                <option value="High">Priority: High</option>
+                            </select>
+                        </div>
+                        <div class="row" style="align-items:center;">
+                            <label style="display:flex; align-items:center; gap:8px;">
+                                <input id="liabAllowMf" type="checkbox" />
+                                <span>Allow using mutual funds if short</span>
+                            </label>
+                        </div>
+                        <div class="row">
+                            <input id="liabNote" type="text" placeholder="Note (optional)" />
+                        </div>
+                        <div class="actions">
+                            <button type="submit">Add Liability</button>
+                            <button type="reset">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Planned incomes -->
+                <div class="card form-card">
+                    <h2>Planned Incomes (for liabilities)</h2>
+                    <form id="plannedIncomeForm">
+                        <div class="row">
+                            <input id="plannedAmount" type="number" step="1" placeholder="Amount (₹)" required />
+                            <input id="plannedDate" type="date" required />
+                        </div>
+                        <div class="row">
+                            <input id="plannedNote" type="text" placeholder="Note (optional)" />
+                        </div>
+                        <div class="actions">
+                            <button type="submit">Add Planned Income</button>
+                            <button type="reset">Reset</button>
+                        </div>
+                    </form>
+
+                    <table style="margin-top:10px; width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Note</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="plannedIncomeBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Overview -->
+            <div class="card table-card">
+                <h3>Liabilities Overview</h3>
+                <p style="font-size:13px; margin-bottom:8px;">
+                    Coverage is calculated using your current balance, planned incomes before each due date,
+                    and optionally mutual fund value if enabled.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Priority</th>
+                            <th>MF allowed</th>
+                            <th>Coverage</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="liabTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>Made by Akshat Goyal</p>
+            <p class="copyright">© 2025 FinTrack — All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/storage.js"></script>
+    <script src="js/model.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/sip-calculator.js"></script>
+    <script src="js/react-charts.js"></script>
+    <script src="js/react-theme-toggle.js"></script>
+    <script src="js/import-csv.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

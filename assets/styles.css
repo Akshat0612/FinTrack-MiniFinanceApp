@@ -1,0 +1,698 @@
+/* ------------------------------------------------------------------
+   THEME TOKENS
+------------------------------------------------------------------ */
+
+:root {
+    /* Light theme (default) */
+    --bg: #f5f5f9;
+    --bg-soft: #e3e8f4;
+
+    --card: #ffffff;
+    --card-soft: #f8fafc;
+
+    --text: #020617;
+    --text-soft: #4b5563;
+    --muted: #6b7280;
+
+    --accent: #2563eb;
+    --accent-soft: rgba(37, 99, 235, 0.12);
+    --accent-strong: #1d4ed8;
+
+    /* black-ish outlines in light mode */
+    --border-subtle: #00000022;
+    --border-strong: #00000066;
+
+    --success: #16a34a;
+    --success-soft: rgba(22, 163, 74, 0.08);
+
+    --danger: #ef4444;
+    --danger-soft: rgba(239, 68, 68, 0.08);
+
+    --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.08);
+    --shadow-strong: 0 18px 40px rgba(15, 23, 42, 0.14);
+
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
+
+    --transition-fast: 0.18s ease-out;
+
+    /* page background for light theme */
+    --app-bg: linear-gradient(180deg, #ffffff, #edf1f9);
+}
+
+/* Dark theme overrides ------------------------------------------------ */
+
+html.dark {
+    --bg: #020617;
+    /* content bg */
+    --bg-soft: #020617;
+
+    --card: #020617;
+    --card-soft: #020617;
+
+    --text: #e5e7eb;
+    --text-soft: #cbd5f5;
+    --muted: #9ca3af;
+
+    --accent: #60a5fa;
+    --accent-soft: rgba(96, 165, 250, 0.18);
+    --accent-strong: #3b82f6;
+
+    --border-subtle: #ffffff20;
+    --border-strong: #ffffff55;
+
+    --success: #22c55e;
+    --success-soft: rgba(34, 197, 94, 0.14);
+
+    --danger: #f97373;
+    --danger-soft: rgba(248, 113, 113, 0.16);
+
+    --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.9);
+    --shadow-strong: 0 22px 55px rgba(0, 0, 0, 0.98);
+
+    /* page background for dark theme = BLACK */
+    --app-bg: #000000;
+}
+
+/* ------------------------------------------------------------------
+   GLOBAL
+------------------------------------------------------------------ */
+
+* {
+    box-sizing: border-box;
+    transition: background-color .25s, color .25s, border-color .25s;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--app-bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ------------------------------------------------------------------
+   TOPBAR
+------------------------------------------------------------------ */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 22px;
+    background: rgba(255, 255, 255, 0.94);
+    border-bottom: 1px solid #e5e7eb;
+    backdrop-filter: blur(16px);
+}
+
+html.dark .topbar {
+    background: rgba(0, 0, 0, 0.96);
+    border-bottom: 1px solid #111827;
+}
+
+.topbar h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    letter-spacing: 0.06em;
+    font-weight: 800;
+}
+
+.top-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Theme toggle (React) */
+
+.theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border-subtle);
+    background: var(--card);
+    color: var(--text-soft);
+    font-size: 0.8rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.10);
+    transition: transform .12s ease-out, box-shadow var(--transition-fast),
+        border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
+    border-color: var(--accent);
+}
+
+.theme-toggle-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 30% 20%, #facc15, #f97316);
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.25),
+        0 0 12px rgba(250, 204, 21, 0.6);
+    flex-shrink: 0;
+}
+
+html.dark .theme-toggle-dot {
+    background: radial-gradient(circle at 30% 20%, #38bdf8, #3b82f6);
+    box-shadow: 0 0 0 1px #000,
+        0 0 14px rgba(96, 165, 250, 0.8);
+}
+
+.theme-toggle-label {
+    padding-right: 2px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------------
+   LAYOUT
+------------------------------------------------------------------ */
+
+.container {
+    max-width: 1120px;
+    margin: 24px auto 40px;
+    padding: 0 16px 40px;
+}
+
+/* ------------------------------------------------------------------
+   TABS (Transactions / Investments / Split Bills)
+------------------------------------------------------------------ */
+
+.tabs {
+    display: block;
+    text-align: left;
+    margin: 12px 0 24px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border-subtle);
+    background: transparent;
+}
+
+.tab-btn {
+    display: inline-block;
+    margin-right: 28px;
+    padding: 6px 0;
+    border: none;
+    background: none;
+    /* NO pill boxes */
+    color: var(--text-soft);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-bottom: 4px solid transparent;
+    /* underline */
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tab-btn:last-child {
+    margin-right: 0;
+}
+
+.tab-btn.active {
+    color: var(--text);
+    font-weight: 700;
+    border-bottom-color: var(--accent);
+}
+
+.tab-btn:not(.active):hover {
+    color: var(--text);
+    border-bottom-color: rgba(37, 99, 235, 0.4);
+}
+
+.tab {
+    display: none;
+}
+
+.tab.active {
+    display: block;
+    animation: fadeIn 0.16s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ------------------------------------------------------------------
+   CARDS & GRID
+------------------------------------------------------------------ */
+
+.card {
+    background: linear-gradient(180deg, var(--card), var(--card-soft));
+    padding: 16px 16px 18px;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-subtle);
+    /* black-tinted in light mode */
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .16s ease-out, box-shadow .18s ease-out,
+        border-color .18s ease-out;
+}
+
+/* subtle bar on top of card */
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0.18;
+    pointer-events: none;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-strong);
+    border-color: var(--border-strong);
+}
+
+.card h2,
+.card h3 {
+    margin: 0 0 10px;
+    font-size: 0.96rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.grid-two {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
+    gap: 14px;
+}
+
+@media (max-width: 900px) {
+    .grid-two {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ------------------------------------------------------------------
+   FORMS & INPUTS
+------------------------------------------------------------------ */
+
+input,
+select,
+textarea,
+button {
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+.row input,
+.row select,
+input,
+select,
+textarea {
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border-subtle);
+    min-width: 0;
+    background: var(--card-soft);
+    color: var(--text);
+}
+
+/* dark-theme inputs: stronger border + light text so controls are visible */
+html.dark .row input,
+html.dark .row select,
+html.dark input,
+html.dark select,
+html.dark textarea {
+    background: #020617;
+    border-color: #1f2937;
+    color: var(--text);
+}
+
+/* make calendar icons visible in dark theme (date + month everywhere) */
+html.dark input[type="date"]::-webkit-calendar-picker-indicator,
+html.dark input[type="month"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.9;
+    cursor: pointer;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: rgba(148, 163, 184, 0.9);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-soft);
+}
+
+/* rows */
+
+.form-card .row,
+.inv-form .row,
+.sip-form .row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.form-card .row>*,
+.inv-form .row>*,
+.sip-form .row>* {
+    flex: 1 1 0;
+}
+
+/* ------------------------------------------------------------------
+   BUTTONS
+------------------------------------------------------------------ */
+
+button {
+    border-radius: 999px;
+    border: none;
+    padding: 7px 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: #ffffff;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.35);
+    transition: transform 0.1s ease-out, box-shadow var(--transition-fast),
+        background var(--transition-fast), opacity 0.1s ease-out;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.45);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
+}
+
+button[type="reset"],
+#sipReset {
+    background: rgba(148, 163, 184, 0.10);
+    color: var(--text-soft);
+    box-shadow: none;
+}
+
+button[type="reset"]:hover,
+#sipReset:hover {
+    background: rgba(148, 163, 184, 0.20);
+}
+
+/* actions row */
+
+.actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* ------------------------------------------------------------------
+   KPIs (Balance / Income / Expense)
+------------------------------------------------------------------ */
+
+.kpis {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.kpi {
+    flex: 1 1 0;
+    padding: 12px 14px;
+    border-radius: var(--radius-lg);
+    background: radial-gradient(circle at top left, var(--accent-soft), transparent);
+    border: 1px solid var(--border-subtle);
+    text-align: left;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.kpi span {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* ------------------------------------------------------------------
+   TABLES
+------------------------------------------------------------------ */
+
+.table-card table,
+.card table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-card th,
+.card th {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: linear-gradient(90deg, var(--card-soft), transparent);
+}
+
+.table-card td,
+.card td {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    font-size: 0.9rem;
+}
+
+.card tbody tr:nth-child(even) {
+    background: rgba(148, 163, 184, 0.04);
+}
+
+html.dark .card tbody tr:nth-child(even) {
+    background: rgba(15, 23, 42, 0.8);
+}
+
+.card tbody tr:hover {
+    background: rgba(37, 99, 235, 0.06);
+}
+
+html.dark .card tbody tr:hover {
+    background: rgba(37, 99, 235, 0.18);
+}
+
+/* table controls */
+
+.table-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.table-controls input[type="search"] {
+    flex: 1 1 180px;
+}
+
+#dateRangeMode,
+#monthPicker,
+#yearPicker {
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border-subtle);
+    background: var(--card-soft);
+}
+
+#yearPicker {
+    width: 92px;
+}
+
+/* NAV input */
+
+.nav-input {
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    background: var(--card-soft);
+    font-size: 0.86rem;
+}
+
+/* ------------------------------------------------------------------
+   REACT CHARTS (Transactions)
+------------------------------------------------------------------ */
+
+.react-charts-root {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+    padding: 12px 4px 4px;
+}
+
+.react-chart-card {
+    padding: 12px;
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    box-shadow: var(--shadow-soft);
+    text-align: center;
+    border: 1px solid var(--border-subtle);
+}
+
+.react-chart-card h4 {
+    margin-top: 0;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+/* ------------------------------------------------------------------
+   INVESTMENTS PIE + SIP
+------------------------------------------------------------------ */
+
+.inv-pie-wrapper {
+    max-width: 260px;
+    margin: 4px auto 0;
+    padding: 6px 0 2px;
+}
+
+.inv-pie-wrapper canvas {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+}
+
+.sip-card h3 {
+    margin-bottom: 8px;
+}
+
+.sip-form .row {
+    align-items: center;
+}
+
+.sip-form .row input[type="number"],
+.sip-form .row input[type="month"] {
+    flex: 1;
+}
+
+.sip-note {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 4px 0 10px;
+    line-height: 1.4;
+}
+
+.sip-note strong {
+    font-weight: 600;
+}
+
+.sip-result {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+html.dark .sip-result {
+    background: #020617;
+    border-color: #1f2937;
+}
+
+.sip-result p {
+    margin: 2px 0;
+}
+
+.sip-result ul {
+    margin: 4px 0 0;
+    padding-left: 18px;
+}
+
+.sip-result li {
+    margin: 2px 0;
+}
+
+/* ------------------------------------------------------------------
+   FOOTER
+------------------------------------------------------------------ */
+
+.footer {
+    margin-top: 40px;
+    background: var(--card);
+    padding: 18px 0 22px;
+    box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.08);
+}
+
+html.dark .footer {
+    background: #000;
+    box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.9);
+}
+
+.footer-inner {
+    max-width: 1100px;
+    margin: auto;
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.footer-inner p {
+    margin: 3px 0;
+}
+
+/* ------------------------------------------------------------------
+   RESPONSIVE
+------------------------------------------------------------------ */
+
+@media (max-width: 900px) {
+    .charts-row {
+        grid-template-columns: 1fr;
+    }
+
+    .tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .tab-btn {
+        margin-right: 18px;
+        font-size: 0.95rem;
+    }
+}
